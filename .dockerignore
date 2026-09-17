@@ -1,0 +1,4 @@
+data/*.tmp
+.git
+.gitignore
+node_modules

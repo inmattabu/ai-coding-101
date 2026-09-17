@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A live server-backed analytics dashboard.">
+  <title>Signal Room | Live analytics</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" data-track="Dashboard home">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span>Signal Room</span>
+      </a>
+      <div class="status"><span class="status-dot"></span><span>Live feed</span><span id="last-updated">Syncing...</span></div>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Network pulse / 01</p>
+        <h1 id="page-title">A clear view of<br><em>what is happening.</em></h1>
+        <p class="intro-copy">A small, shared room for watching attention gather in real time.</p>
+      </div>
+      <div class="session-panel">
+        <span class="panel-label">Your session</span>
+        <strong id="session-time">00:00</strong>
+        <span class="session-note">Staying connected</span>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Analytics overview">
+      <article class="metric-card metric-featured">
+        <div class="metric-heading"><span>Unique visitors</span><span class="metric-icon">◎</span></div>
+        <strong id="visitor-count">0</strong>
+        <p>All-time shared reach</p>
+      </article>
+      <article class="metric-card">
+        <div class="metric-heading"><span>Total interactions</span><span class="metric-icon">↗</span></div>
+        <strong id="click-count">0</strong>
+        <p>Tracked navigation clicks</p>
+      </article>
+      <article class="metric-card">
+        <div class="metric-heading"><span>Connection</span><span class="metric-icon">⌁</span></div>
+        <strong class="connection-value">Online</strong>
+        <p>Server is responding</p>
+      </article>
+    </section>
+
+    <section class="lower-grid">
+      <div class="activity-section">
+        <div class="section-heading"><div><p class="eyebrow">Live stream</p><h2>Recent activity</h2></div><span class="live-pill">● Recording</span></div>
+        <div id="activity-list" class="activity-list" aria-live="polite"><p class="empty-state">Waiting for the first signal...</p></div>
+      </div>
+      <aside class="nav-section">
+        <p class="eyebrow">Explore the room</p>
+        <h2>Follow a signal.</h2>
+        <p>These links are wired into the shared click counter. Try one and watch the activity log respond.</p>
+        <nav class="signal-links" aria-label="Tracked links">
+          <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP" target="_blank" rel="noreferrer" data-track="HTTP reference"><span>HTTP reference</span><span>↗</span></a>
+          <a href="https://nodejs.org/en/learn" target="_blank" rel="noreferrer" data-track="Node.js learn"><span>Node.js learn</span><span>↗</span></a>
+          <a href="https://docs.podman.io/" target="_blank" rel="noreferrer" data-track="Podman docs"><span>Podman docs</span><span>↗</span></a>
+        </nav>
+      </aside>
+    </section>
+
+    <footer><span>Signal Room / server-backed demo</span><span>Node.js 22 · Port 9009</span></footer>
+  </main>
+  <script src="/scripts/script.js" defer></script>
+</body>
+</html>

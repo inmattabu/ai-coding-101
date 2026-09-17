@@ -59,3 +59,35 @@ For container deployment:
 
 For Jenkins deployment:
 
+- A Jenkins agent with Podman and curl installed
+- Permission to publish port `9009`
+
+## Run locally
+
+```sh
+npm start
+```
+
+Open http://localhost:9009. The server stores analytics in
+`data/analytics.json`, so visitor and click totals survive restarts. A stable
+browser ID in local storage prevents page refreshes from inflating unique
+visitors.
+
+## API
+
+- `GET /healthz` - container availability check
+- `GET /api/analytics` - current totals and recent activity
+- `POST /api/visit` - register a visitor ID
+- `POST /api/click` - record a tracked link click
+
+## Container deployment
+
+```sh
+podman build -t analytics-dashboard .
+podman run --rm -p 9009:9009 -v "${PWD}/data:/app/data:Z" analytics-dashboard
+```
+
+The `Jenkinsfile` builds an image tagged with the Jenkins build number,
+replaces the running container, mounts the workspace data directory, and polls
+`/healthz` before completing.
+
