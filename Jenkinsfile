@@ -44,6 +44,8 @@ pipeline {
 
   post {
     always {
+      sh 'podman logs --timestamps ${CONTAINER_NAME} > container-${BUILD_NUMBER}.log 2>&1 || true'
+      archiveArtifacts artifacts: 'container-*.log', allowEmptyArchive: true
       sh 'podman image prune -f || true'
     }
   }
