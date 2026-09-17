@@ -5,7 +5,7 @@ pipeline {
     IMAGE_NAME = 'analytics-dashboard'
     CONTAINER_NAME = 'analytics-dashboard'
     LAST_SUCCESSFUL_TAG = 'last-successful'
-    APP_PORT = '9009  }
+    APP_PORT = '9009'  }
 
   stages {
     stage('Build image') {
