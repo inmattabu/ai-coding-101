@@ -4,6 +4,7 @@ pipeline {
   environment {
     IMAGE_NAME = 'analytics-dashboard'
     CONTAINER_NAME = 'analytics-dashboard'
+    LAST_SUCCESSFUL_TAG = 'last-successful'
     APP_PORT = '9009'
   }
 
@@ -18,7 +19,7 @@ pipeline {
       steps {
         sh '''
           podman rm -f ${CONTAINER_NAME} || true
-          podman run -d --name ${CONTAINER_NAME} \\
+          podman run -d --restart=unless-stopped --name ${CONTAINER_NAME} \\
             -p ${APP_PORT}:9009 \\
             -v "${WORKSPACE}/data:/app/data:Z" \\
             ${IMAGE_NAME}:${BUILD_NUMBER}
@@ -38,6 +39,12 @@ pipeline {
           podman logs ${CONTAINER_NAME}
           exit 1
         '''
+      }
+    }
+
+    stage('Promote successful image') {
+      steps {
+        sh 'podman tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:${LAST_SUCCESSFUL_TAG}'
       }
     }
   }
