@@ -8,7 +8,7 @@ COPY --chown=node:node scripts ./scripts
 COPY --chown=node:node data ./data
 
 ENV NODE_ENV=production
-ENV PORT=80
-EXPOSE 9009
+ENV PORT=9009
+EXPOSE 80
 USER node
 CMD ["node", "server.js"]

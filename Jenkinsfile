@@ -5,8 +5,7 @@ pipeline {
     IMAGE_NAME = 'analytics-dashboard'
     CONTAINER_NAME = 'analytics-dashboard'
     LAST_SUCCESSFUL_TAG = 'last-successful'
-    APP_PORT = '9009'
-  }
+    APP_PORT = '9009  }
 
   stages {
     stage('Build image') {
@@ -20,7 +19,7 @@ pipeline {
         sh '''
           podman rm -f ${CONTAINER_NAME} || true
           podman run -d --restart=unless-stopped --name ${CONTAINER_NAME} \\
-            -p ${APP_PORT}:9009 \\
+            -p ${APP_PORT}:80 \\
             -v "${WORKSPACE}/data:/app/data:Z" \\
             ${IMAGE_NAME}:${BUILD_NUMBER}
         '''
