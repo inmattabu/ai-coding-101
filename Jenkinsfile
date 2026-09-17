@@ -20,7 +20,7 @@ pipeline {
           podman rm -f ${CONTAINER_NAME} || true
           podman run -d --name ${CONTAINER_NAME} \\
             -p ${APP_PORT}:9009 \\
-            -v ${WORKSPACE}/data:/app/data:Z \\
+            -v "${WORKSPACE}/data:/app/data:Z" \\
             ${IMAGE_NAME}:${BUILD_NUMBER}
         '''
       }
