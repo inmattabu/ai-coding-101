@@ -24,15 +24,34 @@ function relativeTime(timestamp) {
 
 function renderActivity(items) {
   if (!items.length) {
-    activityList.innerHTML = '<p class="empty-state">Waiting for the first signal...</p>';
+    activityList.replaceChildren();
+    const emptyState = document.createElement('p');
+    emptyState.className = 'empty-state';
+    emptyState.textContent = 'Waiting for the first signal...';
+    activityList.append(emptyState);
     return;
   }
-  activityList.innerHTML = items.slice(0, 8).map((item) => `
-    <div class="activity-item">
-      <span class="activity-marker">${item.type === 'visitor' ? '✦' : '↗'}</span>
-      <span class="activity-label">${item.label}</span>
-      <time class="activity-time" datetime="${item.timestamp}">${relativeTime(item.timestamp)}</time>
-    </div>`).join('');
+  const activityEntries = items.slice(0, 8).map((item) => {
+    const entry = document.createElement('div');
+    entry.className = 'activity-item';
+
+    const marker = document.createElement('span');
+    marker.className = 'activity-marker';
+    marker.textContent = item.type === 'visitor' ? '✦' : '↗';
+
+    const label = document.createElement('span');
+    label.className = 'activity-label';
+    label.textContent = item.label;
+
+    const time = document.createElement('time');
+    time.className = 'activity-time';
+    time.dateTime = item.timestamp;
+    time.textContent = relativeTime(item.timestamp);
+
+    entry.append(marker, label, time);
+    return entry;
+  });
+  activityList.replaceChildren(...activityEntries);
 }
 
 function renderAnalytics(data) {

@@ -16,6 +16,12 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
 };
+const PUBLIC_FILES = {
+  '/': 'html/index.html',
+  '/index.html': 'html/index.html',
+  '/css/style.css': 'css/style.css',
+  '/scripts/script.js': 'scripts/script.js',
+};
 
 function emptyAnalytics() {
   return { visitorIds: [], clicks: {}, activity: [] };
@@ -100,12 +106,12 @@ function analyticsSummary() {
 }
 
 function serveStatic(request, response, pathname) {
-  const requestedPath = pathname === '/' ? '/index.html' : pathname;
-  const filePath = path.resolve(ROOT, `.${requestedPath}`);
-  if (!filePath.startsWith(ROOT + path.sep)) {
-    sendError(response, 403, 'Forbidden');
+  const publicFile = PUBLIC_FILES[pathname];
+  if (!publicFile) {
+    sendError(response, 404, 'Not found');
     return;
   }
+  const filePath = path.join(ROOT, publicFile);
 
   fs.readFile(filePath, (error, content) => {
     if (error) {
