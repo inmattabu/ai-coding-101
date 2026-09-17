@@ -5,5 +5,5 @@
   "description": "A server-backed analytics dashboard demo",
   "type": "commonjs",
   "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=22" }
+  "engines": { "nginx": ">=22" }
 }
