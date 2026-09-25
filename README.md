@@ -1,65 +1,56 @@
-# Demo Server-Backed Analytics Dashboard
+# Signal Room
 
-This repository contains a small web application with a Node.js analytics API
-that can be served in a container and deployed through a Jenkins pipeline. The
-current application code is on the `isaac_dynamic` branch.
+Server-backed analytics dashboard on the [`isaac-ai-101`](https://github.com/inmattabu/ai-coding-101/tree/isaac-ai-101) branch of [inmattabu/ai-coding-101](https://github.com/inmattabu/ai-coding-101).
 
-The app is an analytics dashboard that demonstrates:
+A Node.js server serves the dashboard and keeps shared analytics in `data/analytics.json`. The page shows:
 
-- A global unique visitor counter stored on the server
-- A timer showing how long the visitor has stayed on the page
-- Global link click tracking for demo navigation links
-- A live activity log synchronized from the server
+- A global unique visitor count. A browser id in `localStorage` keeps refreshes from counting as new visitors.
+- A session timer for how long the current tab has been open.
+- Click totals for links marked with `data-track`.
+- A live activity log, refreshed from the server every 5 seconds.
 
 ## Repository layout
-
-The `isaac_dynamic` branch contains the following project files:
 
 ```text
 .
 |-- Dockerfile
 |-- Jenkinsfile
 |-- README.md
+|-- package.json
+|-- server.js
 |-- css/
 |   `-- style.css
-|-- docs/
-|   `-- ContainerDeploymentManualSteps.pdf
+|-- data/
+|   `-- analytics.json
 |-- html/
 |   `-- index.html
-|-- server.js
 `-- scripts/
-    |-- ascii.sh
     `-- script.js
 ```
 
-Important files:
-
-- `html/index.html` - dashboard markup served by the Node.js server.
-- `css/style.css` - responsive dashboard styling.
-- `scripts/script.js` - client-side timer and analytics API integration.
-- `server.js` - Node.js static file server and analytics API using
-  `/data/analytics.json` for server-side storage.
-- `Dockerfile` - builds an Alpine Node.js image and copies the application into
-  `/app`.
-- `Jenkinsfile` - automates Podman build, cleanup, deployment, and basic
-  availability checks for the `isaac_dynamic` branch.
+- `html/index.html` is the Signal Room dashboard.
+- `css/style.css` is the dashboard styling.
+- `scripts/script.js` registers the visitor, tracks clicks, and polls analytics.
+- `server.js` serves those files and the analytics API.
+- `data/analytics.json` stores visitor ids, click counts, and recent activity.
+- `Dockerfile` builds a Node.js 22 Alpine image and runs the server as the `node` user.
+- `Jenkinsfile` builds the image with Podman, replaces the running container, checks `/healthz`, and tags a successful image as `last-successful`.
 
 ## Prerequisites
 
-For local development:
+Local development:
 
 - Git
-- A web browser
 - Node.js 22 or later
+- A web browser
 
-For container deployment:
+Container deployment:
 
 - Docker or Podman
-- Access to port `9009` on the host machine
 
-For Jenkins deployment:
+Jenkins deployment:
 
-- A Jenkins agent with Podman and curl installed
+- A Jenkins agent with Podman and curl
 - Permission to publish port `9009`
 
 ## Run locally
@@ -68,26 +59,24 @@ For Jenkins deployment:
 npm start
 ```
 
-Open http://localhost:9009. The server stores analytics in
-`data/analytics.json`, so visitor and click totals survive restarts. A stable
-browser ID in local storage prevents page refreshes from inflating unique
-visitors.
+The server listens on `PORT`, which defaults to `9009`. Open http://localhost:9009.
+
+Visitor and click totals are written to `data/analytics.json` and survive restarts.
 
 ## API
 
-- `GET /healthz` - container availability check
-- `GET /api/analytics` - current totals and recent activity
-- `POST /api/visit` - register a visitor ID
-- `POST /api/click` - record a tracked link click
+- `GET /healthz` returns `{ "status": "ok" }`.
+- `GET /api/analytics` returns visitor and click totals plus recent activity.
+- `POST /api/visit` with `{ "visitorId": "..." }` records a visitor id once.
+- `POST /api/click` with `{ "label": "..." }` increments that link's click count.
 
-## Container deployment
+## Container
+
+The image sets `PORT=9009`, so the process listens on `9009` inside the container.
 
 ```sh
 podman build -t analytics-dashboard .
 podman run --rm -p 9009:9009 -v "${PWD}/data:/app/data:Z" analytics-dashboard
 ```
 
-The `Jenkinsfile` builds an image tagged with the Jenkins build number,
-replaces the running container, mounts the workspace data directory, and polls
-`/healthz` before completing.
-
+The `Jenkinsfile` builds `analytics-dashboard:${BUILD_NUMBER}`, replaces the `analytics-dashboard` container, mounts `${WORKSPACE}/data` at `/app/data`, and polls `http://127.0.0.1:9009/healthz`. That pipeline publishes host port `9009` to container port `80`. The server still listens on `9009` unless `PORT` is changed, so a manual run should publish `9009:9009` as shown above.
